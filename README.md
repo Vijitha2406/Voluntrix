@@ -1,30 +1,36 @@
-# React + Vite
+🌟 Voluntrix – Volunteer Management Platform (MERN Stack)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Voluntrix is a full-stack MERN (MongoDB, Express, React, Node.js) web application that simplifies volunteer engagement and event management.  
+It helps organizations manage volunteers, create and promote events, match users with suitable opportunities, and recognize participation through digital badges and tracking.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+This platform is designed for NGOs, institutions, and community organizations to efficiently handle volunteer activities, participation tracking, and communication — all in one place.
 
 
-## Local backend (Express + MongoDB)
+📖 Overview
 
-This project includes a simple Express + Mongoose backend in the `server/` folder.
+Voluntrix provides a digital volunteering ecosystem that connects volunteers with meaningful events while giving organizations tools to manage applications, participation, and recognition.  
+The system includes intelligent matching, real-time messaging, and role-based dashboards for Admins, Organizers, and Volunteers.
 
-Setup
+It supports every step of the volunteering lifecycle — from event discovery to participation tracking and digital appreciation.
 
-1. Copy `server/.env.example` to `server/.env` and update `MONGO_URI` and `JWT_SECRET`.
-2. From the repo root run:
 
-```cmd
-cd server
-npm install
-npm run dev
-```
+🚀 Features
 
-This starts the API on port 4000 by default. The frontend expects the API at `http://localhost:4000`. You can set a different base URL for the frontend using a Vite env variable `VITE_API_BASE`.
+👤 User Profiles
+🗓️ Event Discovery & Smart Matching
+📝 Event Application & Participation Tracking
+⏱️ Volunteer Hours & Digital Recognition
+💬 Messaging & Notifications
+⭐ Feedback & Ratings
+🧭 Event Management Dashboard 
+🔐 Role-Based Authentication & Security
+
+
+🧰 Tech Stack
+
+Frontend-React.js
+Backend-Node.js, Express.js 
+Database-MongoDB
+Authentication-JWT
+Notifications-Socket.io / Real-time Alerts 
+Version Control-Git & GitHub
