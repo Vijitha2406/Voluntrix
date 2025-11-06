@@ -210,7 +210,7 @@ export default function AuthModal({ formType, setFormType, closeModal, showToast
                     <option value="">Select your role</option>
                     <option value="volunteer">Volunteer</option>
                     <option value="organizer">Event Organizer</option>
-                    <option value="admin">Admin</option>
+                    <option value="both">Both</option>
                 </select>
                 <label htmlFor="signup-role">I want to join as</label>
                 </div>

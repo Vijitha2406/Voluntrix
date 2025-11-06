@@ -33,7 +33,7 @@
     ];
 
     return (
-        <section id="impact" className="section">
+        <section id="impact" className="section impact-section">
         <div className="section-head">
             <h2>Our growing impact</h2>
             <p>Numbers that showcase the power of community.</p>
@@ -41,7 +41,7 @@
         <div className="stats">
             {stats.map((s, i) => (
             <div className="stat" key={i}>
-                <span className="stat-number" data-count={s.count} ref={el => countersRef.current[i] = el}>0</span>
+                <span className="stat-number" data-count={s.count} data-number={s.count.toLocaleString()} ref={el => countersRef.current[i] = el}>0</span>
                 <span className="stat-label">{s.label}</span>
             </div>
             ))}

@@ -69,7 +69,17 @@ router.post('/signup', async (req, res) => {
 
     const token = jwt.sign({ id: user._id.toString(), email: user.email }, JWT_SECRET, { expiresIn: '7d' });
 
-    return res.json({ token, user: { id: user._id.toString(), name: user.name, email: user.email, role: user.role } });
+    return res.json({ 
+      token, 
+      user: { 
+        id: user._id.toString(), 
+        name: user.name, 
+        email: user.email, 
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName
+      } 
+    });
   } catch (err) {
     console.error('signup error', err);
     return res.status(500).json({ message: 'Server error' });
@@ -89,7 +99,17 @@ router.post('/login', async (req, res) => {
     if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
 
     const token = jwt.sign({ id: user._id.toString(), email: user.email }, JWT_SECRET, { expiresIn: '7d' });
-    return res.json({ token, user: { id: user._id.toString(), name: user.name, email: user.email, role: user.role } });
+    return res.json({ 
+      token, 
+      user: { 
+        id: user._id.toString(), 
+        name: user.name, 
+        email: user.email, 
+        role: user.role,
+        firstName: user.firstName,
+        lastName: user.lastName
+      } 
+    });
   } catch (err) {
     console.error('login error', err);
     return res.status(500).json({ message: 'Server error' });
@@ -101,9 +121,65 @@ router.get('/me', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).lean();
     if (!user) return res.status(404).json({ message: 'User not found' });
-    return res.json({ id: user._id.toString(), name: user.name, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName });
+    return res.json({ 
+      id: user._id.toString(), 
+      name: user.name, 
+      email: user.email, 
+      role: user.role, 
+      firstName: user.firstName, 
+      lastName: user.lastName
+    });
   } catch (err) {
     console.error('me error', err);
+    return res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// PUT /api/auth/profile - update user profile
+router.put('/profile', authMiddleware, async (req, res) => {
+  try {
+    const { firstName, lastName, email, role } = req.body;
+    
+    // Get current user
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: 'User not found' });
+
+    // Update fields if provided
+    if (firstName !== undefined) user.firstName = firstName;
+    if (lastName !== undefined) user.lastName = lastName;
+    if (email !== undefined && isValidEmail(email)) {
+      // Check if email is already taken by another user
+      const existingUser = await User.findOne({ email, _id: { $ne: req.user.id } });
+      if (existingUser) {
+        return res.status(409).json({ message: 'Email already in use' });
+      }
+      user.email = email;
+    }
+    if (role !== undefined) {
+      const allowed = ['volunteer', 'organizer', 'both'];
+      if (allowed.includes(role.toLowerCase())) {
+        user.role = role.toLowerCase();
+      }
+    }
+    
+    // Update name field
+    user.name = `${user.firstName || ''} ${user.lastName || ''}`.trim();
+
+    await user.save();
+
+    return res.json({ 
+      id: user._id.toString(), 
+      name: user.name, 
+      email: user.email, 
+      role: user.role, 
+      firstName: user.firstName, 
+      lastName: user.lastName
+    });
+  } catch (err) {
+    console.error('profile update error', err);
+    if (err.code === 11000) {
+      return res.status(409).json({ message: 'Email already in use' });
+    }
     return res.status(500).json({ message: 'Server error' });
   }
 });

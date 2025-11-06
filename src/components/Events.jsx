@@ -1,4 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import AuthModal from './AuthModal';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { formatLocationShort } from '../utils/formatLocation';
 
 export default function Events({ showToast }) {
   const [events, setEvents] = useState([]);
@@ -64,19 +68,22 @@ export default function Events({ showToast }) {
   const handleCancel = async (id) => {
     const toast = showToast || ((m,t)=> alert(m));
     if (!token) return toast('Please login', 'error');
-    if (!confirm('Cancel this event? This cannot be undone.')) return;
+    if (!confirm('Delete this event? This cannot be undone.')) return;
     try {
       setBusy(prev => ({ ...prev, [id]: true }));
       const res = await fetch(`${API_BASE}/api/events/${id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${token}` } });
       const data = await res.json();
-      if (!res.ok) return toast(data?.message || 'Failed to cancel', 'error');
-      toast('Event cancelled', 'success');
+      if (!res.ok) return toast(data?.message || 'Failed to delete', 'error');
+      toast('Event deleted successfully', 'success');
       await fetchEvents();
     } catch (err) {
       console.error(err);
       toast('Network error', 'error');
     } finally { setBusy(prev => ({ ...prev, [id]: false })); }
   };
+
+  // Check if user is admin
+  const isAdmin = user?.role === 'admin';
 
   return (
     <section className="section">
@@ -87,24 +94,52 @@ export default function Events({ showToast }) {
       <div className="grid features-grid">
         {loading ? <p>Loading...</p> : (events.length ? events.map((e) => (
           <article key={e.id || e._id} className="feature">
+            {/* Event Image */}
+            {e.image ? (
+              <img src={e.image} alt={e.title} className="event-image" />
+            ) : (
+              <div className="event-image-placeholder">
+                📅
+              </div>
+            )}
+            
             <h3>{e.title}</h3>
             <p>{e.description}</p>
-            <small>{new Date(e.date).toLocaleString()} · {e.location}</small>
-                <div style={{ marginTop: 8 }}>
+            <small>{new Date(e.date).toLocaleString()} · {formatLocationShort(e.location)}</small>
+            <div style={{ marginTop: 8 }}>
               <small>Organizer: {e.organizer || 'N/A'}</small>
-              <div style={{ marginTop: 6 }}>
-                {/* If user is organizer of this event, show cancel */}
+              <div style={{ marginTop: 6, display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+                {/* Organizer can cancel/delete their own events */}
                 {user && (user.id === e.organizer) ? (
-                  <button className="btn btn-danger" disabled={busy[e.id || e._id]} onClick={() => handleCancel(e.id || e._id)}>Cancel Event</button>
+                  <button className="btn btn-danger" disabled={busy[e.id || e._id]} onClick={() => handleCancel(e.id || e._id)}>
+                    Cancel Event
+                  </button>
                 ) : (
-                  // if volunteer and already joined, show Leave; else Join
+                  // Volunteers can join/leave events
                   user && (e.volunteers || []).find(v => v === user.id) ? (
-                    <button className="btn" disabled={busy[e.id || e._id]} onClick={() => handleLeave(e.id || e._id)}>Leave</button>
+                    <button className="btn" disabled={busy[e.id || e._id]} onClick={() => handleLeave(e.id || e._id)}>
+                      Leave
+                    </button>
                   ) : (
-                    <button className="btn" disabled={busy[e.id || e._id]} onClick={() => handleJoin(e.id || e._id)}>Join</button>
+                    <button className="btn" disabled={busy[e.id || e._id]} onClick={() => handleJoin(e.id || e._id)}>
+                      Join
+                    </button>
                   )
                 )}
-                <span style={{ marginLeft: 8 }}>{(e.volunteers || []).length} joined</span>
+                
+                {/* Admin can delete any event */}
+                {isAdmin && user && (user.id !== e.organizer) && (
+                  <button 
+                    className="admin-delete-btn" 
+                    disabled={busy[e.id || e._id]} 
+                    onClick={() => handleCancel(e.id || e._id)}
+                    title="Admin: Delete Event"
+                  >
+                    🗑️ Admin Delete
+                  </button>
+                )}
+                
+                <span style={{ marginLeft: 'auto' }}>{(e.volunteers || []).length} joined</span>
               </div>
             </div>
           </article>
