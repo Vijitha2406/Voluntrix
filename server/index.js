@@ -83,8 +83,19 @@ process.on('SIGINT', async () => {
 async function start() {
   try {
     console.log('🚀 Starting Voluntrix Server...');
+    console.log('🔍 Environment check:');
+    console.log('   NODE_ENV:', process.env.NODE_ENV || 'not set');
+    console.log('   PORT:', process.env.PORT || 'not set');
+    console.log('   MONGO_URI exists:', !!process.env.MONGO_URI);
+    console.log('   MONGODB_URI exists:', !!process.env.MONGODB_URI);
     
     const uri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/voluntrix';
+    
+    // Mask the URI for logging (hide password)
+    const maskedUri = uri.includes('@') 
+      ? uri.replace(/(:\/\/[^:]+:)[^@]+(@)/, '$1****$2')
+      : uri;
+    console.log('🔗 Using MongoDB URI:', maskedUri);
     
     try {
       await mongoose.connect(uri, mongoOptions);
