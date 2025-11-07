@@ -89,7 +89,7 @@ async function start() {
     console.log('   MONGO_URI exists:', !!process.env.MONGO_URI);
     console.log('   MONGODB_URI exists:', !!process.env.MONGODB_URI);
     
-    const uri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/voluntrix';
+    const uri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb+srv://nadikattuvijitha:Vijitha2406@cluster0.co3phyu.mongodb.net/voluntrix?retryWrites=true&w=majority&appName=Cluster0';
     
     // Mask the URI for logging (hide password)
     const maskedUri = uri.includes('@') 
