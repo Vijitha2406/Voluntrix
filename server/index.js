@@ -84,7 +84,7 @@ async function start() {
   try {
     console.log('🚀 Starting Voluntrix Server...');
     
-    const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/voluntrix';
+    const uri = process.env.MONGO_URI || process.env.MONGODB_URI || 'mongodb://localhost:27017/voluntrix';
     
     try {
       await mongoose.connect(uri, mongoOptions);
